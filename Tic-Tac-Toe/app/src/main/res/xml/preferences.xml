@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:defaultValue="true"
+        android:title="Play against Computer"
+        android:key="vsCom" />
+    <PreferenceCategory
+        android:summary="1_Player"
+        android:title="Single Player Settings" >
+        <ListPreference
+        android:key="playerMark"
+        android:title="Your Mark"
+        android:dialogTitle="Choose your Mark"
+        android:entries="@array/listOptions"
+        android:entryValues="@array/listValues"
+        android:defaultValue="@string/defaultMark" />
+
+        <ListPreference
+            android:key="firstTurn1"
+            android:title="First Turn"
+            android:dialogTitle="Choose who plays first"
+            android:entries="@array/list3Options"
+            android:entryValues="@array/list3Values"
+            android:defaultValue="@string/defaultTurn" />
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:summary="2_Player"
+        android:title="Two Player Settings" >
+        <ListPreference
+            android:key="player1Mark"
+            android:title="Player 1 Mark"
+            android:dialogTitle="Choose player1's Mark"
+            android:entries="@array/listOptions"
+            android:entryValues="@array/listValues"
+            android:defaultValue="@string/defaultMark" />
+        <ListPreference
+            android:key="firstTurn2"
+            android:title="First Turn"
+            android:dialogTitle="Choose who plays first"
+            android:entries="@array/list2Options"
+            android:entryValues="@array/list2Values"
+            android:defaultValue="@string/defaultTurn" />
+    </PreferenceCategory>
+</PreferenceScreen>

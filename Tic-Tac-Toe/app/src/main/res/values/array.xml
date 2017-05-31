@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="listOptions">
+        <item>"O"</item>
+        <item>"X"</item>
+    </string-array>
+
+    <string-array name="listValues">
+        <item>"O"</item>
+        <item>"X"</item>
+    </string-array>
+
+    <string-array name="list2Options">
+        <item>"Player 1"</item>
+        <item>"Player 2"</item>
+    </string-array>
+
+    <string-array name="list2Values">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="list3Options">
+        <item>"Com"</item>
+        <item>"You"</item>
+    </string-array>
+
+    <string-array name="list3Values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+</resources>
