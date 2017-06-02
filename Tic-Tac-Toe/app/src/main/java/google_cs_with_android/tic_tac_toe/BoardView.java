@@ -3,6 +3,8 @@ package google_cs_with_android.tic_tac_toe;
 import android.app.Activity;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,10 +24,12 @@ public class BoardView {
     private minimax solver;         //used when playing against com
     private TextView textView;
     Toast gamedraw;
+    Animation shake;
 
     public BoardView(Activity activity){
         this.activity = activity;
         gamedraw = Toast.makeText(activity, "It's a Draw! ", Toast.LENGTH_LONG);
+        shake = AnimationUtils.loadAnimation(activity, R.anim.shake);
     }
 
     public void init(boolean againstCom, String player1Mark, int firstTurn) {
@@ -108,13 +112,17 @@ public class BoardView {
                 currentBoard[i][j] = currentTurn;
                 score = value(currentBoard, solver.opponent, solver.player);
                 if (score == 10) {
+                    animateVictory();
                     playerWon.show();
-                    textView.setText("You Win! Click restart to restart the game");
+                    textView.setText("You Win! Click Restart");
+                    disableAllButtons();
                     return;
                 }
                 if (!isEmpty(currentBoard)) {
+                    animateDraw();
                     gamedraw.show();
-                    textView.setText("The game is Draw! Click restart to restart the game");
+                    textView.setText("The game is Draw! Click Restart");
+                    disableAllButtons();
                     return;
                 }
                 currentTurn = 0;
@@ -126,13 +134,17 @@ public class BoardView {
                 buttons[obtainMove[0]][obtainMove[1]].setText(marks[currentTurn]);
                 score = value(currentBoard, solver.player, solver.opponent);
                 if (score == 10) {
+                    animateVictory();
                     comWon.show();
-                    textView.setText("You loose! Click restart to restart the game");
+                    textView.setText("You loose! Click Restart");
+                    disableAllButtons();
                     return;
                 }
                 if (!isEmpty(currentBoard)) {
+                    animateDraw();
                     gamedraw.show();
-                    textView.setText("The game is Draw! Click restart to restart the game");
+                    textView.setText("The game is Draw! Click Restart");
+                    disableAllButtons();
                     return;
                 }
                 textView.setText("You are " + player1Mark + "   Make your move");
@@ -165,18 +177,24 @@ public class BoardView {
                 currentBoard[i][j] = currentTurn;
                 score = value(currentBoard, currentTurn, opponent);
                 if (score == 10) {
+                    Log.i("score10","animate calling");
+                    animateVictory();
+                    Log.i("score10","animate done");
                     if (currentTurn == 1) {
                         player1.show();
-                        textView.setText("Player1 won!  Click restart to restart the game");
+                        textView.setText("Player1 won!  Click Restart");
                     } else {
                         player2.show();
-                        textView.setText("Player2 won!  Click restart to restart the game");
+                        textView.setText("Player2 won!  Click Restart");
                     }
+                    disableAllButtons();
                     return;
                 }
                 if (!isEmpty(currentBoard)) {
+                    animateDraw();
                     gamedraw.show();
-                    textView.setText("The game is Draw!  Click restart to restart the game");
+                    textView.setText("The game is Draw!  Click Restart");
+                    disableAllButtons();
                     return;
                 }
                 currentTurn = opponent;
@@ -185,6 +203,56 @@ public class BoardView {
         }
     }
 
+    private void animateDraw(){
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                buttons[i][j].setAnimation(shake);
+            }
+        }
+    }
+
+    private void animateVictory(){
+        Log.i("animate","in animate");
+        for (int row = 2; row>-1; row--){
+            if (currentBoard[row][0]==currentBoard[row][1] && currentBoard[row][1]==currentBoard[row][2]) {
+                Log.i("animate","row"+row);
+                buttons[row][0].setAnimation(shake);
+                buttons[row][1].setAnimation(shake);
+                buttons[row][2].setAnimation(shake);
+                Log.i("animate","rowanimated"+row);
+                return;
+            }
+        }
+        // Checking for Columns for X or O victory.
+        for (int col = 0; col<3; col++){
+            if (currentBoard[0][col]==currentBoard[1][col] && currentBoard[1][col]==currentBoard[2][col]){
+                Log.i("animate","col"+col);
+                buttons[0][col].setAnimation(shake);
+                buttons[1][col].setAnimation(shake);
+                buttons[2][col].setAnimation(shake);
+                Log.i("animate","col"+col);
+                return;
+            }
+        }
+        // Checking for Diagonals for X or O victory.
+        if (currentBoard[0][0]==currentBoard[1][1] && currentBoard[1][1]==currentBoard[2][2]){
+            buttons[0][0].setAnimation(shake);
+            buttons[1][1].setAnimation(shake);
+            buttons[2][2].setAnimation(shake);
+            return;
+        }
+        buttons[0][2].setAnimation(shake);
+        buttons[1][1].setAnimation(shake);
+        buttons[2][0].setAnimation(shake);
+    }
+
+    private void disableAllButtons(){
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                buttons[i][j].setEnabled(false);
+            }
+        }
+    }
 
     private void playAgainstCom() {
         if (player1Mark.equals("X")) {

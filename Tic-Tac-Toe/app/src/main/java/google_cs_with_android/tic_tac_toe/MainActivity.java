@@ -12,9 +12,9 @@ import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
-    private int firstTurn = 1;
-    private boolean playAgainstCom = true;
-    private String playerMark = "X";
+    private int firstTurn ;
+    private boolean playAgainstCom;
+    private String playerMark;
     private BoardView boardView;
 
     @Override
@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         boardView = new BoardView(MainActivity.this);
         Button restart = (Button)findViewById(R.id.restart);
-        Log.i("here",findViewById(R.id.button2)+"5"+restart);
         restart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -31,6 +30,19 @@ public class MainActivity extends AppCompatActivity {
                 boardView.init(playAgainstCom, playerMark, firstTurn);
             }
         });
+
+        SharedPreferences mySharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        playAgainstCom = mySharedPreferences.getBoolean("vsCom",true);
+        if(playAgainstCom){
+            playerMark = mySharedPreferences.getString("playerMark", "X");
+            //if firstTurn==1 : player makes the move else if firstTurn == 0: com plays
+            firstTurn = Integer.parseInt(mySharedPreferences.getString("firstTurn1", "1"));
+
+        }else{
+            playerMark = mySharedPreferences.getString("player1Mark", "X");
+            //if firstTurn==1 : player1 makes the move else: player2
+            firstTurn = Integer.parseInt(mySharedPreferences.getString("firstTurn2", "1"));
+        }
         boardView.init(playAgainstCom, playerMark, firstTurn);
     }
 
