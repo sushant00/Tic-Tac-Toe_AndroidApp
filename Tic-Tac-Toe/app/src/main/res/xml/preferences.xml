@@ -7,6 +7,12 @@
     <PreferenceCategory
         android:summary="1_Player"
         android:title="Single Player Settings" >
+        <EditTextPreference
+            android:defaultValue="Player1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Player Name"
+            android:key="playerName" />
         <ListPreference
         android:key="playerMark"
         android:title="Your Mark"
@@ -27,6 +33,18 @@
     <PreferenceCategory
         android:summary="2_Player"
         android:title="Two Player Settings" >
+        <EditTextPreference
+            android:defaultValue="Player1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Player1 Name"
+            android:key="player1Name" />
+        <EditTextPreference
+            android:defaultValue="Player2"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Player2 Name"
+            android:key="player2Name" />
         <ListPreference
             android:key="player1Mark"
             android:title="Player 1 Mark"

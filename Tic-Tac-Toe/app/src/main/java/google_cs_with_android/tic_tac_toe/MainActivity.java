@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
             playerMark = mySharedPreferences.getString("playerMark", "X");
             //if firstTurn==1 : player makes the move else if firstTurn == 0: com plays
             firstTurn = Integer.parseInt(mySharedPreferences.getString("firstTurn1", "1"));
+            Log.i("change","to"+firstTurn);
 
         }else{
             playerMark = mySharedPreferences.getString("player1Mark", "X");

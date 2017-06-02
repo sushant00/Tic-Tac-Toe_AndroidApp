@@ -35,6 +35,7 @@ public class BoardView {
     public void init(boolean againstCom, String player1Mark, int firstTurn) {
         this.player1Mark = player1Mark;
         this.currentTurn = firstTurn;
+        Log.i("here","currentTurn");
         this.currentBoard = new int[3][3];
         this.buttons = new Button[3][3];
         this.textView = (TextView) activity.findViewById(R.id.textView);
@@ -65,19 +66,22 @@ public class BoardView {
 
         if (vsCom) {
             //handle the firstMove
-            if (currentTurn == 0) {
-                int[] obtainMove = solver.nextmove(currentBoard);
-                currentBoard[obtainMove[0]][obtainMove[1]] = solver.player;
-                buttons[obtainMove[0]][obtainMove[1]].setText(solver.Splayer);
-                buttons[obtainMove[0]][obtainMove[1]].setEnabled(false);
-                currentTurn = 1;
-            }
+            Log.i("here","vsCom");
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     buttons[i][j].setOnClickListener(new onClickVsCom(i, j));
                     buttons[i][j].setText(" ");
                     buttons[i][j].setEnabled(true);
                 }
+            }
+            if (currentTurn == 0) {
+                Log.i("here","enter");
+                int[] obtainMove = solver.nextmove(currentBoard);
+                Log.i("here","setting");
+                currentBoard[obtainMove[0]][obtainMove[1]] = solver.player;
+                buttons[obtainMove[0]][obtainMove[1]].setText(solver.Splayer);
+                buttons[obtainMove[0]][obtainMove[1]].setEnabled(false);
+                currentTurn = 1;
             }
             textView.setText("You are " + player1Mark + "  Make your move");
         } else {
@@ -109,7 +113,7 @@ public class BoardView {
             if (buttons[i][j].isEnabled()) {
                 buttons[i][j].setEnabled(false);
                 buttons[i][j].setText(marks[currentTurn]);
-                currentBoard[i][j] = currentTurn;
+                currentBoard[i][j] = solver.opponent;
                 score = value(currentBoard, solver.opponent, solver.player);
                 if (score == 10) {
                     animateVictory();
@@ -213,7 +217,7 @@ public class BoardView {
 
     private void animateVictory(){
         Log.i("animate","in animate");
-        for (int row = 2; row>-1; row--){
+        for (int row = 0; row<3; row++){
             if (currentBoard[row][0]==currentBoard[row][1] && currentBoard[row][1]==currentBoard[row][2]) {
                 Log.i("animate","row"+row);
                 buttons[row][0].setAnimation(shake);
