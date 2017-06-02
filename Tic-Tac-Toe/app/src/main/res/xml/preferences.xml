@@ -12,7 +12,8 @@
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="Player Name"
-            android:key="playerName" />
+            android:key="playerName"
+            android:maxLength="12"/>
         <ListPreference
         android:key="playerMark"
         android:title="Your Mark"
@@ -38,13 +39,15 @@
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="Player1 Name"
-            android:key="player1Name" />
+            android:key="player1Name"
+            android:maxLength="12" />
         <EditTextPreference
             android:defaultValue="Player2"
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="Player2 Name"
-            android:key="player2Name" />
+            android:key="player2Name"
+            android:maxLength="12" />
         <ListPreference
             android:key="player1Mark"
             android:title="Player 1 Mark"

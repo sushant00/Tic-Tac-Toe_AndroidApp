@@ -1,6 +1,9 @@
 package google_cs_with_android.tic_tac_toe;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -18,6 +21,7 @@ public class BoardView {
     private Activity activity;
     private String player1Mark;
     private int currentTurn;    //0 for com, 1 for player1, 2 for player2
+    private String[] currentTurnName; // index 1 stores name for player1, 2 for player2
     private String[] marks;     //index 1 stores player1's marks, index 2 stores player2's mark
     private int[][] currentBoard;   //1 means X, 2 means O
     private Button[][] buttons;
@@ -32,9 +36,10 @@ public class BoardView {
         shake = AnimationUtils.loadAnimation(activity, R.anim.shake);
     }
 
-    public void init(boolean againstCom, String player1Mark, int firstTurn) {
+    public void init(boolean againstCom, String player1Mark, int firstTurn, String[] names) {
         this.player1Mark = player1Mark;
         this.currentTurn = firstTurn;
+        this.currentTurnName = new String[]{"",names[0],names[1]};
         Log.i("here","currentTurn");
         this.currentBoard = new int[3][3];
         this.buttons = new Button[3][3];
@@ -83,7 +88,7 @@ public class BoardView {
                 buttons[obtainMove[0]][obtainMove[1]].setEnabled(false);
                 currentTurn = 1;
             }
-            textView.setText("You are " + player1Mark + "  Make your move");
+            textView.setText( currentTurnName[currentTurn]+"  make your move. You are " + player1Mark);
         } else {
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
@@ -92,7 +97,7 @@ public class BoardView {
                     buttons[i][j].setEnabled(true);
                 }
             }
-            textView.setText(" Player" + currentTurn + " make your move  You are " + marks[currentTurn]);
+            textView.setText( currentTurnName[currentTurn]+"  make your move. You are " + marks[currentTurn]);
         }
     }
 
@@ -151,7 +156,7 @@ public class BoardView {
                     disableAllButtons();
                     return;
                 }
-                textView.setText("You are " + player1Mark + "   Make your move");
+                textView.setText( currentTurnName[currentTurn]+"  make your move. You are " + marks[currentTurn]);
                 currentTurn = 1;
             }
         }
@@ -165,8 +170,8 @@ public class BoardView {
         int j;
         int opponent;
         int score;
-        Toast player1 = Toast.makeText(activity, "Player1 Won! Player2 Loose! ", Toast.LENGTH_LONG);
-        Toast player2 = Toast.makeText(activity, "Player2 Won! Player1 Loose! ", Toast.LENGTH_LONG);
+        Toast player1 = Toast.makeText(activity, currentTurnName[1]+" Won! "+currentTurnName[2]+" Loose! ", Toast.LENGTH_LONG);
+        Toast player2 = Toast.makeText(activity, currentTurnName[2]+" Won! "+currentTurnName[1]+" Loose! ", Toast.LENGTH_LONG);
 
         public onClick2player(int i, int j) {
             this.i = i;
@@ -186,10 +191,10 @@ public class BoardView {
                     Log.i("score10","animate done");
                     if (currentTurn == 1) {
                         player1.show();
-                        textView.setText("Player1 won!  Click Restart");
+                        textView.setText(currentTurnName[1]+" won!  Click Restart");
                     } else {
                         player2.show();
-                        textView.setText("Player2 won!  Click Restart");
+                        textView.setText(currentTurnName[2]+"Player2 won!  Click Restart");
                     }
                     disableAllButtons();
                     return;
@@ -202,7 +207,7 @@ public class BoardView {
                     return;
                 }
                 currentTurn = opponent;
-                textView.setText(" Player" + currentTurn + " make your move    You are " + marks[currentTurn]);
+                textView.setText(currentTurnName[currentTurn] + " make your move    You are " + marks[currentTurn]);
             }
         }
     }
@@ -217,29 +222,34 @@ public class BoardView {
 
     private void animateVictory(){
         Log.i("animate","in animate");
+        // Checking for Rows for X or O victory.
         for (int row = 0; row<3; row++){
             if (currentBoard[row][0]==currentBoard[row][1] && currentBoard[row][1]==currentBoard[row][2]) {
-                Log.i("animate","row"+row);
-                buttons[row][0].setAnimation(shake);
-                buttons[row][1].setAnimation(shake);
-                buttons[row][2].setAnimation(shake);
-                Log.i("animate","rowanimated"+row);
-                return;
+                if(currentBoard[row][0] > 0) {
+                    Log.i("animate", "row" + row);
+                    buttons[row][0].setAnimation(shake);
+                    buttons[row][1].setAnimation(shake);
+                    buttons[row][2].setAnimation(shake);
+                    Log.i("animate", "rowanimated" + row);
+                    return;
+                }
             }
         }
         // Checking for Columns for X or O victory.
         for (int col = 0; col<3; col++){
             if (currentBoard[0][col]==currentBoard[1][col] && currentBoard[1][col]==currentBoard[2][col]){
-                Log.i("animate","col"+col);
-                buttons[0][col].setAnimation(shake);
-                buttons[1][col].setAnimation(shake);
-                buttons[2][col].setAnimation(shake);
-                Log.i("animate","col"+col);
-                return;
+                if(currentBoard[0][col] > 0) {
+                    Log.i("animate", "col" + col);
+                    buttons[0][col].setAnimation(shake);
+                    buttons[1][col].setAnimation(shake);
+                    buttons[2][col].setAnimation(shake);
+                    Log.i("animate", "col" + col);
+                    return;
+                }
             }
         }
         // Checking for Diagonals for X or O victory.
-        if (currentBoard[0][0]==currentBoard[1][1] && currentBoard[1][1]==currentBoard[2][2]){
+        if (currentBoard[0][0]==currentBoard[1][1] && currentBoard[1][1]==currentBoard[2][2] && currentBoard[0][0]>0){
             buttons[0][0].setAnimation(shake);
             buttons[1][1].setAnimation(shake);
             buttons[2][2].setAnimation(shake);
@@ -250,6 +260,7 @@ public class BoardView {
         buttons[2][0].setAnimation(shake);
     }
 
+
     private void disableAllButtons(){
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -258,6 +269,24 @@ public class BoardView {
         }
     }
 
+    public void speechInput(){
+        Intent speechIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        speechIntent.putExtra(RecognizerIntent.EXTRA_PROMPT,"Please speak your move");
+        try {
+            //startActivityForResult(speechIntent, 222);
+        }
+        catch(ActivityNotFoundException a){
+            Toast.makeText(activity,"Voice Control not supported for your device!", Toast.LENGTH_LONG).show();
+        }
+
+    }
+    /*@Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
+            ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            mList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, matches));
+*/
     private void playAgainstCom() {
         if (player1Mark.equals("X")) {
             solver = new minimax(2, 1);

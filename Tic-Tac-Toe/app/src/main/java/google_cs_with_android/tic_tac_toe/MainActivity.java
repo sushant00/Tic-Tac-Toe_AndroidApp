@@ -13,6 +13,7 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
     private int firstTurn ;
+    private String[] names = {"Player1","Player2"};
     private boolean playAgainstCom;
     private String playerMark;
     private BoardView boardView;
@@ -27,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 boardView = new BoardView(MainActivity.this);
-                boardView.init(playAgainstCom, playerMark, firstTurn);
+                boardView.init(playAgainstCom, playerMark, firstTurn,names);
             }
         });
 
@@ -37,14 +38,15 @@ public class MainActivity extends AppCompatActivity {
             playerMark = mySharedPreferences.getString("playerMark", "X");
             //if firstTurn==1 : player makes the move else if firstTurn == 0: com plays
             firstTurn = Integer.parseInt(mySharedPreferences.getString("firstTurn1", "1"));
-            Log.i("change","to"+firstTurn);
-
+            names[0] = mySharedPreferences.getString("playerName", "Player1");
         }else{
             playerMark = mySharedPreferences.getString("player1Mark", "X");
             //if firstTurn==1 : player1 makes the move else: player2
             firstTurn = Integer.parseInt(mySharedPreferences.getString("firstTurn2", "1"));
+            names[0] = mySharedPreferences.getString("player1Name", "Player1");
+            names[1] = mySharedPreferences.getString("player2Name", "Player2");
         }
-        boardView.init(playAgainstCom, playerMark, firstTurn);
+        boardView.init(playAgainstCom, playerMark, firstTurn,names);
     }
 
 
@@ -81,15 +83,16 @@ public class MainActivity extends AppCompatActivity {
                 playerMark = mySharedPreferences.getString("playerMark", "X");
                 //if firstTurn==1 : player makes the move else if firstTurn == 0: com plays
                 firstTurn = Integer.parseInt(mySharedPreferences.getString("firstTurn1", "1"));
-
+                names[0] = mySharedPreferences.getString("playerName", "Player1");
             }else{
                 playerMark = mySharedPreferences.getString("player1Mark", "X");
                 //if firstTurn==1 : player1 makes the move else: player2
-                 firstTurn = Integer.parseInt(mySharedPreferences.getString("firstTurn2", "1"));
-
+                firstTurn = Integer.parseInt(mySharedPreferences.getString("firstTurn2", "1"));
+                names[0] = mySharedPreferences.getString("player1Name", "Player1");
+                names[1] = mySharedPreferences.getString("player2Name", "Player2");
             }
             boardView = new BoardView(MainActivity.this);
-            boardView.init(playAgainstCom, playerMark, firstTurn);
+            boardView.init(playAgainstCom, playerMark, firstTurn,names);
         }
     }
 }
