@@ -47,7 +47,7 @@ public class BoardView extends MainActivity{
         this.buttons = new Button[3][3];
         this.textView = (TextView) activity.findViewById(R.id.textView);
         this.marks = new String[3];
-        this.speech = true;
+        this.speech = speech;
 
         //setup text to speech
         textSpeech=new TextToSpeech(activity, new TextToSpeech.OnInitListener() {
