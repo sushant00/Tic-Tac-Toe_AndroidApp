@@ -10,8 +10,8 @@ public class minimax {
     public minimax(int player, int opponent){
         this.player = player;
         this.opponent = opponent;
-        this.Splayer = player == 1 ? "X" : "O";
-        this.Sopponent = opponent == 1 ? "X" : "O";
+        this.Splayer = player == 1 ? "X" : "0";
+        this.Sopponent = opponent == 1 ? "X" : "0";
     };
 
     public static boolean isEmpty(int[][] board){

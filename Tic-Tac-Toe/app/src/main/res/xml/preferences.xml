@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <SwitchPreference
+        android:defaultValue="false"
+        android:title="Voice Control"
+        android:key="voiceMode" />
+    <SwitchPreference
+        android:defaultValue="false"
+        android:title="Speech"
+        android:key="speech" />
+    <SwitchPreference
         android:defaultValue="true"
         android:title="Play against Computer"
         android:key="vsCom" />

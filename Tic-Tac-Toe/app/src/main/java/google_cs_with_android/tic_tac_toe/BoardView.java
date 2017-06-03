@@ -1,9 +1,8 @@
 package google_cs_with_android.tic_tac_toe;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
-import android.speech.RecognizerIntent;
+import android.os.Build;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -12,23 +11,27 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Locale;
+
 import static google_cs_with_android.tic_tac_toe.minimax.isEmpty;
 import static google_cs_with_android.tic_tac_toe.minimax.value;
 
 
-public class BoardView {
+public class BoardView extends MainActivity{
 
-    private Activity activity;
-    private String player1Mark;
-    private int currentTurn;    //0 for com, 1 for player1, 2 for player2
-    private String[] currentTurnName; // index 1 stores name for player1, 2 for player2
-    private String[] marks;     //index 1 stores player1's marks, index 2 stores player2's mark
-    private int[][] currentBoard;   //1 means X, 2 means O
-    private Button[][] buttons;
-    private minimax solver;         //used when playing against com
-    private TextView textView;
+    public Activity activity;
+    public String player1Mark;
+    public int currentTurn;    //0 for com, 1 for player1, 2 for player2
+    public String[] currentTurnName; // index 1 stores name for player1, 2 for player2
+    public String[] marks;     //index 1 stores player1's marks, index 2 stores player2's mark
+    public int[][] currentBoard;   //1 means X, 2 means O
+    public Button[][] buttons;
+    public minimax solver;         //used when playing against com
+    public TextView textView;
+    public boolean speech;
     Toast gamedraw;
     Animation shake;
+    private TextToSpeech textSpeech;
 
     public BoardView(Activity activity){
         this.activity = activity;
@@ -36,15 +39,25 @@ public class BoardView {
         shake = AnimationUtils.loadAnimation(activity, R.anim.shake);
     }
 
-    public void init(boolean againstCom, String player1Mark, int firstTurn, String[] names) {
+    public void init(boolean againstCom, String player1Mark, int firstTurn, String[] names, boolean speech) {
         this.player1Mark = player1Mark;
         this.currentTurn = firstTurn;
         this.currentTurnName = new String[]{"",names[0],names[1]};
-        Log.i("here","currentTurn");
         this.currentBoard = new int[3][3];
         this.buttons = new Button[3][3];
         this.textView = (TextView) activity.findViewById(R.id.textView);
         this.marks = new String[3];
+        this.speech = true;
+
+        //setup text to speech
+        textSpeech=new TextToSpeech(activity, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status != TextToSpeech.ERROR) {
+                    textSpeech.setLanguage(Locale.UK);
+                }
+            }
+        });
 
         if (againstCom)
             playAgainstCom();
@@ -52,7 +65,7 @@ public class BoardView {
             playerAgainstplayer();
     }
 
-    private void setBoardAndStart(boolean vsCom) {
+    public void setBoardAndStart(boolean vsCom) {
         for (int i = 0; i < 3; i++) {
             for (int j = 1; j < 3; j++)
                 currentBoard[i][j] = 0;
@@ -71,7 +84,6 @@ public class BoardView {
 
         if (vsCom) {
             //handle the firstMove
-            Log.i("here","vsCom");
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     buttons[i][j].setOnClickListener(new onClickVsCom(i, j));
@@ -80,21 +92,39 @@ public class BoardView {
                 }
             }
             if (currentTurn == 0) {
-                Log.i("here","enter");
                 int[] obtainMove = solver.nextmove(currentBoard);
-                Log.i("here","setting");
                 currentBoard[obtainMove[0]][obtainMove[1]] = solver.player;
                 buttons[obtainMove[0]][obtainMove[1]].setText(solver.Splayer);
                 buttons[obtainMove[0]][obtainMove[1]].setEnabled(false);
+                if (speech){
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        textSpeech.speak("Com placed " + solver.Splayer + " at position " + (obtainMove[0] * 3 + obtainMove[1] + 1), TextToSpeech.QUEUE_FLUSH, null, null);
+                    } else {
+                        textSpeech.speak("Com placed " + solver.Splayer + " at position " + (obtainMove[0] * 3 + obtainMove[1] + 1), TextToSpeech.QUEUE_FLUSH, null);
+                    }
+                    while (textSpeech.isSpeaking()) {
+                        continue;
+                    }
+                }
                 currentTurn = 1;
             }
-            textView.setText( currentTurnName[currentTurn]+"  make your move. You are " + player1Mark);
+            textView.setText( currentTurnName[1]+"  make your move. You are " + player1Mark);
         } else {
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     buttons[i][j].setOnClickListener(new onClick2player(i, j));
                     buttons[i][j].setText(" ");
                     buttons[i][j].setEnabled(true);
+                }
+            }
+            if (speech) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    textSpeech.speak(currentTurnName[currentTurn] + "  make your move. You are " + marks[currentTurn], TextToSpeech.QUEUE_FLUSH, null, null);
+                } else {
+                    textSpeech.speak(currentTurnName[currentTurn] + "  make your move. You are " + marks[currentTurn], TextToSpeech.QUEUE_FLUSH, null);
+                }
+                while (textSpeech.isSpeaking()) {
+                    continue;
                 }
             }
             textView.setText( currentTurnName[currentTurn]+"  make your move. You are " + marks[currentTurn]);
@@ -119,10 +149,27 @@ public class BoardView {
                 buttons[i][j].setEnabled(false);
                 buttons[i][j].setText(marks[currentTurn]);
                 currentBoard[i][j] = solver.opponent;
+                if (speech) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        textSpeech.speak("You placed" + solver.Sopponent + " at position " + (i * 3 + j + 1), TextToSpeech.QUEUE_FLUSH, null, null);
+                    } else {
+                        textSpeech.speak("You placed" + solver.Sopponent + " at position " + (i * 3 + j + 1), TextToSpeech.QUEUE_FLUSH, null);
+                    }
+                    while (textSpeech.isSpeaking()) {
+                        continue;
+                    }
+                }
                 score = value(currentBoard, solver.opponent, solver.player);
                 if (score == 10) {
                     animateVictory();
                     playerWon.show();
+                    if (speech) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            textSpeech.speak("You Win!", TextToSpeech.QUEUE_FLUSH, null, null);
+                        } else {
+                            textSpeech.speak("You Win!", TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                    }
                     textView.setText("You Win! Click Restart");
                     disableAllButtons();
                     return;
@@ -130,6 +177,13 @@ public class BoardView {
                 if (!isEmpty(currentBoard)) {
                     animateDraw();
                     gamedraw.show();
+                    if (speech) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            textSpeech.speak("It's a Draw! ", TextToSpeech.QUEUE_FLUSH, null, null);
+                        } else {
+                            textSpeech.speak("It's a Draw! ", TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                    }
                     textView.setText("The game is Draw! Click Restart");
                     disableAllButtons();
                     return;
@@ -141,10 +195,27 @@ public class BoardView {
                 currentBoard[obtainMove[0]][obtainMove[1]] = solver.player;
                 buttons[obtainMove[0]][obtainMove[1]].setEnabled(false);
                 buttons[obtainMove[0]][obtainMove[1]].setText(marks[currentTurn]);
+                if (speech) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        textSpeech.speak("Com placed " + solver.Splayer + " at position " + (obtainMove[0] * 3 + obtainMove[1] + 1), TextToSpeech.QUEUE_FLUSH, null, null);
+                    } else {
+                        textSpeech.speak("Com placed " + solver.Splayer + " at position " + (obtainMove[0] * 3 + obtainMove[1] + 1), TextToSpeech.QUEUE_FLUSH, null);
+                    }
+                    while (textSpeech.isSpeaking()) {
+                        continue;
+                    }
+                }
                 score = value(currentBoard, solver.player, solver.opponent);
                 if (score == 10) {
                     animateVictory();
                     comWon.show();
+                    if (speech) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            textSpeech.speak("You loose! Com Won", TextToSpeech.QUEUE_FLUSH, null, null);
+                        } else {
+                            textSpeech.speak("You loose! Com Won", TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                    }
                     textView.setText("You loose! Click Restart");
                     disableAllButtons();
                     return;
@@ -152,11 +223,18 @@ public class BoardView {
                 if (!isEmpty(currentBoard)) {
                     animateDraw();
                     gamedraw.show();
+                    if (speech) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            textSpeech.speak("It's a Draw", TextToSpeech.QUEUE_FLUSH, null, null);
+                        } else {
+                            textSpeech.speak("It's a Draw", TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                    }
                     textView.setText("The game is Draw! Click Restart");
                     disableAllButtons();
                     return;
                 }
-                textView.setText( currentTurnName[currentTurn]+"  make your move. You are " + marks[currentTurn]);
+                textView.setText( currentTurnName[1]+"  make your move. You are " + marks[currentTurn]);
                 currentTurn = 1;
             }
         }
@@ -180,21 +258,43 @@ public class BoardView {
 
         public void onClick(View view) {
             if (buttons[i][j].isEnabled()) {
+                if (speech) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        textSpeech.speak(currentTurnName[currentTurn] + " placed " + marks[currentTurn] + " at position" + (i * 3 + j + 1), TextToSpeech.QUEUE_FLUSH, null, null);
+                    } else {
+                        textSpeech.speak(currentTurnName[currentTurn] + " placed " + marks[currentTurn] + " at position" + (i * 3 + j + 1), TextToSpeech.QUEUE_FLUSH, null);
+                    }
+                    while (textSpeech.isSpeaking()) {
+                        continue;
+                    }
+                }
                 opponent = currentTurn == 1 ? 2 : 1;
                 buttons[i][j].setEnabled(false);
                 buttons[i][j].setText(marks[currentTurn]);
                 currentBoard[i][j] = currentTurn;
                 score = value(currentBoard, currentTurn, opponent);
                 if (score == 10) {
-                    Log.i("score10","animate calling");
                     animateVictory();
-                    Log.i("score10","animate done");
-                    if (currentTurn == 1) {
-                        player1.show();
+                    if (speech) {
+                        if (currentTurn == 1) {
+                            player1.show();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                textSpeech.speak(currentTurnName[1] + " won!", TextToSpeech.QUEUE_FLUSH, null, null);
+                            } else {
+                                textSpeech.speak(currentTurnName[1] + " won!", TextToSpeech.QUEUE_FLUSH, null);
+                            }
+                        }
                         textView.setText(currentTurnName[1]+" won!  Click Restart");
                     } else {
                         player2.show();
-                        textView.setText(currentTurnName[2]+"Player2 won!  Click Restart");
+                        if (speech) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                textSpeech.speak(currentTurnName[2] + " won!", TextToSpeech.QUEUE_FLUSH, null, null);
+                            } else {
+                                textSpeech.speak(currentTurnName[2] + " won!", TextToSpeech.QUEUE_FLUSH, null);
+                            }
+                        }
+                        textView.setText(currentTurnName[2]+" won!  Click Restart");
                     }
                     disableAllButtons();
                     return;
@@ -202,17 +302,24 @@ public class BoardView {
                 if (!isEmpty(currentBoard)) {
                     animateDraw();
                     gamedraw.show();
+                    if (speech) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            textSpeech.speak("It's a Draw! ", TextToSpeech.QUEUE_FLUSH, null, null);
+                        } else {
+                            textSpeech.speak("It's a Draw! ", TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                    }
                     textView.setText("The game is Draw!  Click Restart");
                     disableAllButtons();
                     return;
                 }
                 currentTurn = opponent;
-                textView.setText(currentTurnName[currentTurn] + " make your move    You are " + marks[currentTurn]);
+                textView.setText(currentTurnName[currentTurn] + " make your move. You are " + marks[currentTurn]);
             }
         }
     }
 
-    private void animateDraw(){
+    public void animateDraw(){
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 buttons[i][j].setAnimation(shake);
@@ -220,17 +327,14 @@ public class BoardView {
         }
     }
 
-    private void animateVictory(){
-        Log.i("animate","in animate");
+    public void animateVictory(){
         // Checking for Rows for X or O victory.
         for (int row = 0; row<3; row++){
             if (currentBoard[row][0]==currentBoard[row][1] && currentBoard[row][1]==currentBoard[row][2]) {
                 if(currentBoard[row][0] > 0) {
-                    Log.i("animate", "row" + row);
                     buttons[row][0].setAnimation(shake);
                     buttons[row][1].setAnimation(shake);
                     buttons[row][2].setAnimation(shake);
-                    Log.i("animate", "rowanimated" + row);
                     return;
                 }
             }
@@ -239,11 +343,9 @@ public class BoardView {
         for (int col = 0; col<3; col++){
             if (currentBoard[0][col]==currentBoard[1][col] && currentBoard[1][col]==currentBoard[2][col]){
                 if(currentBoard[0][col] > 0) {
-                    Log.i("animate", "col" + col);
                     buttons[0][col].setAnimation(shake);
                     buttons[1][col].setAnimation(shake);
                     buttons[2][col].setAnimation(shake);
-                    Log.i("animate", "col" + col);
                     return;
                 }
             }
@@ -261,7 +363,7 @@ public class BoardView {
     }
 
 
-    private void disableAllButtons(){
+    public void disableAllButtons(){
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 buttons[i][j].setEnabled(false);
@@ -269,25 +371,32 @@ public class BoardView {
         }
     }
 
-    public void speechInput(){
-        Intent speechIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        speechIntent.putExtra(RecognizerIntent.EXTRA_PROMPT,"Please speak your move");
-        try {
-            //startActivityForResult(speechIntent, 222);
+    public void speakBoard(){
+        String[] symbols = {"empty","X","0"};
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            textSpeech.speak( currentTurnName[currentTurn]+" you are "+marks[currentTurn], TextToSpeech.QUEUE_FLUSH, null,null);
+        } else {
+            textSpeech.speak(currentTurnName[currentTurn]+" you are "+marks[currentTurn], TextToSpeech.QUEUE_FLUSH, null);
         }
-        catch(ActivityNotFoundException a){
-            Toast.makeText(activity,"Voice Control not supported for your device!", Toast.LENGTH_LONG).show();
+        while(textSpeech.isSpeaking()){
+            continue;
         }
-
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    textSpeech.speak("position "+(i*3+j+1)+" "+symbols[currentBoard[i][j]], TextToSpeech.QUEUE_FLUSH, null,null);
+                } else {
+                    textSpeech.speak("position "+(i*3+j+1)+" "+symbols[currentBoard[i][j]], TextToSpeech.QUEUE_FLUSH, null);
+                }
+                while(textSpeech.isSpeaking()){
+                    continue;
+                }
+            }
+        }
     }
-    /*@Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
-            ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-            mList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, matches));
-*/
-    private void playAgainstCom() {
+
+
+    public void playAgainstCom() {
         if (player1Mark.equals("X")) {
             solver = new minimax(2, 1);
             marks[0] = "O";
@@ -310,6 +419,16 @@ public class BoardView {
             marks[2] = "X";
         }
         setBoardAndStart(false);
+    }
+
+
+    // on pause , for textSpeech
+    public void onPause(){
+        if(textSpeech !=null){
+            textSpeech.stop();
+            textSpeech.shutdown();
+        }
+        super.onPause();
     }
 }
 
