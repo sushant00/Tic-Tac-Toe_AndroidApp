@@ -7,7 +7,6 @@ import android.preference.PreferenceManager;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
     private boolean voiceMode;
     private Button restart;
     private boolean speech; //true means moves are speaked out
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +80,11 @@ public class MainActivity extends AppCompatActivity {
             Intent settingsIntent = new Intent();
             settingsIntent.setClass(MainActivity.this, settingsActivity.class);
             startActivityForResult(settingsIntent, 0);
+            return true;
+        }
+        else if(id==R.id.action_help){
+            Intent intent = (new Intent(MainActivity.this, helper.class));
+            startActivity (intent);
             return true;
         }
         else if(id == R.id.exit){
@@ -173,6 +176,11 @@ public class MainActivity extends AppCompatActivity {
             boardView = new BoardView(MainActivity.this);
             boardView.init(playAgainstCom, playerMark, firstTurn, names, speech);
         }
+        /*else if (requestCode == 1) {
+            Intent intent = (new Intent(MainActivity.this, helper.class));
+            startActivity (intent);
+
+        }*/
     }
 
     @Override

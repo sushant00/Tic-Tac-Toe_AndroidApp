@@ -6,6 +6,7 @@ import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
@@ -328,6 +329,7 @@ public class BoardView extends MainActivity{
     }
 
     public void animateVictory(){
+        AnimationSet as = new AnimationSet(true);
         // Checking for Rows for X or O victory.
         for (int row = 0; row<3; row++){
             if (currentBoard[row][0]==currentBoard[row][1] && currentBoard[row][1]==currentBoard[row][2]) {
@@ -430,5 +432,7 @@ public class BoardView extends MainActivity{
         }
         super.onPause();
     }
+
+
 }
 
