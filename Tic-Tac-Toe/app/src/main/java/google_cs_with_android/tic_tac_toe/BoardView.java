@@ -323,7 +323,7 @@ public class BoardView extends MainActivity{
     public void animateDraw(){
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                buttons[i][j].setAnimation(shake);
+                buttons[i][j].startAnimation(shake);
             }
         }
     }
@@ -334,9 +334,9 @@ public class BoardView extends MainActivity{
         for (int row = 0; row<3; row++){
             if (currentBoard[row][0]==currentBoard[row][1] && currentBoard[row][1]==currentBoard[row][2]) {
                 if(currentBoard[row][0] > 0) {
-                    buttons[row][0].setAnimation(shake);
-                    buttons[row][1].setAnimation(shake);
-                    buttons[row][2].setAnimation(shake);
+                    buttons[row][0].startAnimation(shake);
+                    buttons[row][1].startAnimation(shake);
+                    buttons[row][2].startAnimation(shake);
                     return;
                 }
             }
@@ -345,23 +345,23 @@ public class BoardView extends MainActivity{
         for (int col = 0; col<3; col++){
             if (currentBoard[0][col]==currentBoard[1][col] && currentBoard[1][col]==currentBoard[2][col]){
                 if(currentBoard[0][col] > 0) {
-                    buttons[0][col].setAnimation(shake);
-                    buttons[1][col].setAnimation(shake);
-                    buttons[2][col].setAnimation(shake);
+                    buttons[0][col].startAnimation(shake);
+                    buttons[1][col].startAnimation(shake);
+                    buttons[2][col].startAnimation(shake);
                     return;
                 }
             }
         }
         // Checking for Diagonals for X or O victory.
         if (currentBoard[0][0]==currentBoard[1][1] && currentBoard[1][1]==currentBoard[2][2] && currentBoard[0][0]>0){
-            buttons[0][0].setAnimation(shake);
-            buttons[1][1].setAnimation(shake);
-            buttons[2][2].setAnimation(shake);
+            buttons[0][0].startAnimation(shake);
+            buttons[1][1].startAnimation(shake);
+            buttons[2][2].startAnimation(shake);
             return;
         }
-        buttons[0][2].setAnimation(shake);
-        buttons[1][1].setAnimation(shake);
-        buttons[2][0].setAnimation(shake);
+        buttons[0][2].startAnimation(shake);
+        buttons[1][1].startAnimation(shake);
+        buttons[2][0].startAnimation(shake);
     }
 
 

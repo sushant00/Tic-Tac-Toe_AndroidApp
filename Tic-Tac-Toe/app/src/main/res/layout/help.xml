@@ -36,8 +36,8 @@
                 android:layout_height="wrap_content"
                 android:padding="8dip"
                 android:text="You can play the game( Simple Tic-Tac-Toe) both in Single Player(You vs Computer) and Two Player mode.\n\n
-Our game offers Voice Recognition mode where user can make his move just by dictating out any number from 1 to 9. For every move, user has to press &quot;Volume Down&quot; button before dictating.\nYou can also dictate out words :-\n
-&#8226; &quot;Board&quot; - Phone will speak out position of every noughts and crosses currently on the board.\n
+This game offers Voice Recognition mode where user can make his move just by dictating out any number from 1 to 9. For every move, user has to press &quot;Volume Down&quot; button before dictating.\nYou can also dictate out words :-\n
+&#8226; &quot;Board&quot; - Phone will speak out position of every noughts(O) and crosses(X) currently on the board.\n
 &#8226; &quot;Restart&quot; - It will restart the game.\n\n
 There is also one additional added feature of &quot;Speech&quot; where after every move made by player, it is spoken out loud by phone.\n\n
 All these features would even allow visually impaired people to play this game."
@@ -45,6 +45,34 @@ All these features would even allow visually impaired people to play this game."
                 android:textStyle="normal|bold"
                 android:textColor="@android:color/darker_gray" />
         </LinearLayout>
+
+            <TextView
+                android:id="@+id/developer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Developers"
+                android:background="#000000"
+                android:padding="2dip"
+                android:layout_weight="1"
+                android:textSize="30sp"
+                android:textColor="@android:color/background_light"
+                android:textStyle="normal|bold"
+                android:textAllCaps="false" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="22.83"
+                android:padding="4dip">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dip"
+                    android:text=" Deepanshu Kumain    dkumain@gmail.com\n Sushant Kumar Singh  sushant2964@gmail.com\n IIIT Delhi"
+                    android:textSize="14sp"
+                    android:textStyle="normal|bold"
+                    android:textColor="@android:color/darker_gray" />
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
