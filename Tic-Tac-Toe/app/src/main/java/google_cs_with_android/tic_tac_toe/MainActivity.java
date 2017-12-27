@@ -56,12 +56,6 @@ public class MainActivity extends AppCompatActivity {
             names[0] = mySharedPreferences.getString("player1Name", "Player1");
             names[1] = mySharedPreferences.getString("player2Name", "Player2");
         }
-        if(voiceMode){
-            Toast.makeText(this, "Press volume down key."+
-                    "Say \"Restart\" to restart the game" +
-                            "Say \"Board\" to read out the board. " +
-                            " Speak out positions from 1 to 9. "+"     Good Luck!!", Toast.LENGTH_LONG).show();
-        }
         boardView.init(playAgainstCom, playerMark, firstTurn, names, speech);
     }
 
@@ -168,8 +162,8 @@ public class MainActivity extends AppCompatActivity {
                 names[1] = mySharedPreferences.getString("player2Name", "Player2");
             }
             if(voiceMode){
-                Toast.makeText(this, "Press volume down key" +
-                        "Say \"Restart\" to restart the game" +
+                Toast.makeText(this, "Press volume down key. "+
+                        "Say \"Restart\" to restart the game. " +
                         "Say \"Board\" to read out the board. " +
                         " Speak out positions from 1 to 9. "+"     Good Luck!!", Toast.LENGTH_LONG).show();
             }
